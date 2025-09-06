@@ -25,7 +25,7 @@
             font-family: 'Inter', sans-serif; 
             -webkit-font-smoothing: antialiased; 
             -moz-osx-font-smoothing: grayscale;
-            background-image: url('https://raw.githubusercontent.com/lambder-2025/Tarjeta_lealtad_v1/main/IMG-20250906-WA0018.jpg');
+            background-image: url('https://raw.githubusercontent.com/lambder-2025/PRANNA/main/IMG-20250906-WA0018.jpg');
             background-size: cover;
             background-position: center center;
             background-attachment: fixed;
@@ -90,10 +90,9 @@
 <script>
 // --- GLOBAL ERROR HANDLER & CONFIG ---
 window.onerror = function(message, source, lineno, colno, error) { showToast(`Error: ${message} en línea ${lineno}`, true); hideLoader(); return true; };
-// === PERSONALIZACIÓN PARA PRANNA ===
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyq_Hr-kT1n6xKgYVNbUl_s_6WqJRzdruE8RxafpuiOCM22i1xsZMUpxH-OU5WKrW-uoQ/exec';
-// --- (El resto del script es el mismo) ---
-let currentClient = null, allClients = [], appConfig = {}, html5QrCode = null, currentSender = 'Vendedor'; let secretClickCount = 0; let lastClickTimestamp = 0; const DOM = {}; 
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4IQgqtZ1-kvCmtG2NfNYRhU88Qz0W33Z2OBHKdZ-TL0VzNMU-P7d5WS9HCpyNXrrv9Q/exec';
+let currentClient = null, allClients = [], appConfig = {}, html5QrCode = null, currentSender = 'Vendedor';
+let secretClickCount = 0; let lastClickTimestamp = 0; const DOM = {}; 
 function initializeApp() { const ids = ['loader', 'toast', 'toast-message', 'client-view', 'client-login-section', 'client-card-section', 'client-telefono', 'client-fechaNacimiento', 'view-card-btn', 'client-name', 'client-visits', 'qrcode', 'rewards-list', 'last-updated', 'login-view', 'admin-user', 'admin-pass', 'admin-login-btn', 'admin-panel', 'vendor-section', 'comms-section', 'master-section', 'nombre', 'telefono', 'fechaNacimiento', 'search-create-btn', 'start-scan-btn', 'qr-reader-container', 'qr-reader', 'stop-scan-btn', 'client-panel', 'client-info', 'add-visit-btn', 'rewards-select', 'redeem-reward-btn', 'client-list-body', 'messages-container', 'message-input', 'send-message-btn', 'new-admin-password', 'visits-to-complete', 'rewards-editor', 'add-reward-btn', 'save-config-btn']; ids.forEach(id => { const camelCaseId = id.replace(/-([a-z])/g, g => g[1].toUpperCase()); DOM[camelCaseId] = document.getElementById(id); }); try { const savedData = localStorage.getItem('loyaltyCardData'); if (savedData) { const cardData = JSON.parse(savedData); displayCard(cardData.client, cardData.config, cardData.lastUpdated); DOM.clientLoginSection.style.display = 'none'; DOM.clientCardSection.style.display = 'block'; } else { showView('client-view'); } } catch (e) { console.warn("Could not access localStorage. Starting in online-only mode.", e); showView('client-view'); } DOM.viewCardBtn.addEventListener('click', () => { const currentTime = Date.now(); if (DOM.clientTelefono.value.trim() === '12345') { if (currentTime - lastClickTimestamp > 1000) secretClickCount = 0; secretClickCount++; lastClickTimestamp = currentTime; if (secretClickCount >= 10) { secretClickCount = 0; showView('login-view'); return; } } else { handleViewCard(); } }); DOM.adminLoginBtn.addEventListener('click', handleAdminLogin); DOM.searchCreateBtn.addEventListener('click', handleSearchOrCreate); DOM.addVisitBtn.addEventListener('click', handleAddVisit); DOM.redeemRewardBtn.addEventListener('click', handleRedeemReward); DOM.startScanBtn.addEventListener('click', startScanner); DOM.stopScanBtn.addEventListener('click', stopScanner); DOM.sendMessageBtn.addEventListener('click', handleSendMessage); DOM.addRewardBtn.addEventListener('click', addReward); DOM.saveConfigBtn.addEventListener('click', saveConfiguration); if ('serviceWorker'in navigator) { navigator.serviceWorker.register(`sw.js?v=${new Date().getTime()}`).then(reg => console.log('SW registered!')).catch(err => console.log('SW registration failed:', err)); } }
 function showToast(message, isError = false) { if (!DOM.toast) return; DOM.toastMessage.textContent = message; DOM.toast.className = `fixed bottom-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity duration-300 z-50 ${isError ? 'bg-red-600' : 'bg-green-600'}`; DOM.toast.classList.remove('opacity-0'); setTimeout(() => { DOM.toast.classList.add('opacity-0'); }, 5000); }
 function showLoader() { if (DOM.loader) DOM.loader.style.display = 'flex'; }
