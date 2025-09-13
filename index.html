@@ -1,130 +1,105 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRANNA Lealtad</title>
-    
-    <!-- PWA Manifest & Icon -->
-    <meta name="theme-color" content="#111111"/>
-    <link rel="apple-touch-icon" href="https://placehold.co/192x192/111111/FFFFFF?text=P&font=cormorant-garamond">
-    <link rel="manifest" href="manifest.json">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    
-    <!-- Google Fonts para el logo -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
-    
-    <style>
-        @import url('https://rsms.me/inter/inter.css');
-        body { 
-            font-family: 'Inter', sans-serif; 
-            -webkit-font-smoothing: antialiased; 
-            -moz-osx-font-smoothing: grayscale;
-            background-image: url('https://raw.githubusercontent.com/lambder-2025/PRANNA/main/IMG-20250906-WA0018.jpg');
-            background-size: cover;
-            background-position: center center;
-            background-attachment: fixed;
-        }
-        #qr-reader { border: 2px dashed #cbd5e1; border-radius: 8px; overflow: hidden; }
-        #qr-reader video { width: 100% !important; height: auto !important; }
-        .logo-font { font-family: 'Cormorant Garamond', serif; letter-spacing: 0.2em; }
-        .logo-line { display: block; width: 100%; height: 1px; background-color: #111111; }
-    </style>
-</head>
-<body class="text-gray-900">
+// === CONFIGURACIÓN ===
+const SPREADSHEET_ID = '1LwK8W7-Cdkqjs9cptFRZ_8zRi7-ucg7mb2x9RZvmttA';
 
-    <div id="loader" class="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50" style="display: none;"><div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-gray-900"></div></div>
-    <div id="toast" class="fixed bottom-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50"><p id="toast-message"></p></div>
-    
-    <div class="bg-white bg-opacity-80 backdrop-blur-sm min-h-screen">
-        <div id="client-view" class="view">
-            <div class="container mx-auto p-6 max-w-md min-h-screen flex flex-col justify-center">
-                <div id="client-login-section">
-                     <header class="mb-12 text-center">
-                        <div class="text-gray-900">
-                            <span class="logo-line mb-2"></span>
-                            <h1 class="text-6xl font-semibold logo-font">PRANNA</h1>
-                            <span class="logo-line mt-2"></span>
-                            <p class="text-xs tracking-widest mt-3">BEAUTY STUDIO | CLOTHING BOUTIQUE</p>
-                        </div>
-                    </header>
-                    <div class="space-y-4">
-                        <input type="tel" id="client-telefono" placeholder="Tu Teléfono" class="input-field-visual">
-                        <input type="text" id="client-fechaNacimiento" placeholder="Tu Fecha de Nacimiento" class="input-field-visual" onfocus="(this.type='date')">
-                        <button id="view-card-btn" class="btn-primary-visual w-full">Consultar</button>
-                    </div>
-                </div>
-                <div id="client-card-section" style="display: none;" class="text-center">
-                     <button onclick="showView('client-view', true)" class="absolute top-6 left-6 text-gray-600 hover:text-gray-900 transition">&larr; Volver</button>
-                    <h2 class="text-3xl font-bold mb-2" id="client-name"></h2>
-                    <p class="text-gray-600 mb-4">Número total de visitas</p>
-                    <p class="text-8xl font-bold my-4" id="client-visits"></p>
-                    <div id="qrcode" class="flex justify-center p-2 bg-white my-6 border rounded-lg"></div>
-                    <div id="rewards-list" class="space-y-3 text-left w-full"></div>
-                    <p class="text-xs text-gray-500 mt-2">Última actualización: <span id="last-updated">Nunca</span></p>
-                </div>
-            </div>
-        </div>
-        <div id="login-view" class="view fixed inset-0 bg-black bg-opacity-60 items-center justify-center p-4 z-40" style="display: none;"><div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm"><h2 class="text-2xl font-semibold text-center mb-6">Acceso de Administrador</h2><div class="space-y-4"><input type="text" id="admin-user" placeholder="Usuario (ej. admin)" class="input-field"><input type="password" id="admin-pass" placeholder="Contraseña" class="input-field"><button id="admin-login-btn" class="btn-primary-visual w-full">Ingresar</button><button onclick="showView('client-view')" class="btn-secondary w-full">Cancelar</button></div></div></div>
-        <div id="admin-panel" class="view bg-gray-50" style="display: none;"><div class="container mx-auto p-4 md:p-6 max-w-4xl"><header class="mb-6 flex justify-between items-center"><div><h1 class="text-3xl font-bold text-gray-900">Panel de Administrador</h1><p class="text-gray-600">Gestión del Sistema de Lealtad</p></div><button onclick="logoutAdmin()" class="btn-secondary">Salir</button></header><nav class="flex justify-center border-b-2 border-gray-200 mb-6"><button onclick="showAdminSection('vendor-section')" class="nav-tab active-tab" data-section="vendor-section">Vendedor</button><button onclick="showAdminSection('comms-section')" class="nav-tab" data-section="comms-section">Comunicación</button><button onclick="showAdminSection('master-section')" class="nav-tab" data-section="master-section">Panel Maestro</button></nav><main><section id="vendor-section" class="admin-section"><div class="bg-white p-6 rounded-lg shadow-md"><h2 class="text-2xl font-semibold mb-4">Gestión de Clientes</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"><input type="text" id="nombre" placeholder="Nombre Completo" class="input-field"><input type="tel" id="telefono" placeholder="Teléfono" class="input-field"><input type="text" id="fechaNacimiento" placeholder="Fecha de Nacimiento" class="input-field" onfocus="(this.type='date')"><button id="search-create-btn" class="btn-primary-visual md:col-span-2">Buscar o Crear Tarjeta</button></div><div class="text-center mb-6"><button id="start-scan-btn" class="btn-secondary">Escanear QR</button><div id="qr-reader-container" class="mt-4 w-full max-w-sm mx-auto" style="display: none;"><div id="qr-reader"></div><button id="stop-scan-btn" class="btn-danger mt-2">Detener Escáner</button></div></div><div id="client-panel" style="display: none;" class="mt-6 border-t pt-6"><h3 class="text-xl font-semibold mb-4">Información del Cliente</h3><div id="client-info" class="mb-4 bg-gray-100 p-4 rounded-lg"></div><div class="flex flex-wrap gap-4 items-center"><button id="add-visit-btn" class="btn-success">+1 Visita</button><div class="flex items-center gap-2"><select id="rewards-select" class="input-field"></select><button id="redeem-reward-btn" class="btn-warning flex-shrink-0">Canjear</button></div></div></div><div class="mt-8"><h3 class="text-xl font-semibold mb-4">Lista de Clientes</h3><div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr><th class="table-header">Nombre</th><th class="table-header">Visitas</th><th class="table-header">Teléfono</th><th class="table-header">Folio</th></tr></thead><tbody id="client-list-body"></tbody></table></div></div></div></section><section id="comms-section" class="admin-section" style="display: none;"><div class="bg-white p-6 rounded-lg shadow-md"><h2 class="text-2xl font-semibold mb-4">Comunicación Interna</h2><div class="space-y-4"><div id="messages-container" class="h-80 overflow-y-auto border p-4 rounded-lg bg-gray-50 flex flex-col-reverse"></div><div class="flex gap-2"><input type="text" id="message-input" placeholder="Escribe tu mensaje..." class="input-field flex-grow"><button id="send-message-btn" class="btn-primary-visual">Enviar</button></div></div></div></section><section id="master-section" class="admin-section" style="display: none;"><div class="bg-white p-6 rounded-lg shadow-md"><h2 class="text-2xl font-semibold mb-4">Panel de Control Maestro</h2><div class="mb-6 p-4 border border-yellow-300 bg-yellow-50 rounded-lg"><h3 class="text-xl font-medium mb-2">Seguridad</h3><p class="text-sm text-yellow-800 mb-2">Establece o actualiza la contraseña.</p><input type="password" id="new-admin-password" class="input-field w-64" placeholder="Nueva Contraseña"></div><div class="mb-6"><h3 class="text-xl font-medium mb-2">Reglas Generales</h3><div class="flex items-center gap-4"><label for="visits-to-complete" class="font-medium">Visitas para Recompensa:</label><input type="number" id="visits-to-complete" class="input-field w-24"></div></div><div><h3 class="text-xl font-medium mb-2">Gestionar Recompensas</h3><div id="rewards-editor" class="space-y-3 mb-4"></div><button id="add-reward-btn" class="btn-secondary">+ Añadir Recompensa</button></div><div class="mt-8 border-t pt-6 text-right"><button id="save-config-btn" class="btn-success">Guardar Configuración</button></div></div></section></main></div></div>
-    </div>
-    
-    <style>
-        .input-field { @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 transition bg-white; }
-        .input-field-visual { @apply w-full text-center text-lg px-4 py-3 bg-white bg-opacity-70 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-800 transition; }
-        .btn-primary-visual { @apply w-full bg-gray-900 text-white font-bold py-3 px-4 rounded-xl hover:bg-black transition duration-300 text-lg; }
-        .btn-secondary { @apply bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300; }
-        .btn-success { @apply bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300; }
-        .btn-warning { @apply bg-yellow-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-yellow-600 transition duration-300; }
-        .btn-danger { @apply bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300; }
-        .nav-tab { @apply px-4 py-2 text-lg font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-800 hover:border-gray-800 transition; }
-        .nav-tab.active-tab { @apply border-gray-800 text-gray-800; }
-        .table-header { @apply p-3 text-sm font-semibold tracking-wide text-left bg-gray-100 border-b-2; }
-    </style>
+// === ACCESO A LAS HOJAS ===
+let clientesSheet, configSheet, mensajesSheet, transaccionesSheet;
+try {
+    const allSheets = SpreadsheetApp.openById(SPREADSHEET_ID).getSheets();
+    clientesSheet = allSheets[0]; 
+    configSheet = allSheets[1];   
+    mensajesSheet = allSheets[2]; 
+    transaccionesSheet = allSheets[3];
+} catch (e) {
+    throw new Error(`No se pudo abrir la hoja de cálculo. Verifica que el ID sea correcto y que el script tenga permisos. Error: ${e.message}`);
+}
 
-<script>
-// --- GLOBAL ERROR HANDLER & CONFIG ---
-window.onerror = function(message, source, lineno, colno, error) { showToast(`Error: ${message}`, true); console.error('Error detallado:', { message, source, lineno, colno, error }); hideLoader(); return true; };
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0oLVYtefB9xzJd_mkHiFXZ4tGIRD-n3xGiNbCWRsxbbhj_YIkzU5mYgvmBTUmrjQ9Jg/exec';
-let currentClient=null,allClients=[],appConfig={},html5QrCode=null,currentSender="Vendedor",secretClickCount=0,lastClickTimestamp=0;const DOM={};
+// === MANEJO DE PETICIONES (ROUTING) ===
+function doGet(e) {
+  try {
+    const action = e.parameter.action;
+    switch (action) {
+      case 'listarTarjetas': return handleResponse(listarTarjetas());
+      case 'obtenerConfiguracion': return handleResponse(obtenerConfiguracion());
+      case 'obtenerMensajes': return handleResponse(obtenerMensajes());
+      case 'buscarClientePorCredenciales': 
+        return handleResponse(buscarClientePorCredenciales(e.parameter.telefono, e.parameter.fechaNacimiento));
+      default:
+        return handleResponse({ status: 'error', message: 'Acción GET no válida.' });
+    }
+  } catch (error) {
+    Logger.log(`Error en doGet: ${error.toString()}`);
+    return handleResponse({ status: 'error', message: `Error fatal en el servidor (doGet): ${error.message}`});
+  }
+}
 
-function initializeApp() { const ids = ['loader', 'toast', 'toast-message', 'client-view', 'client-login-section', 'client-card-section', 'client-telefono', 'client-fechaNacimiento', 'view-card-btn', 'client-name', 'client-visits', 'qrcode', 'rewards-list', 'last-updated', 'login-view', 'admin-user', 'admin-pass', 'admin-login-btn', 'admin-panel', 'vendor-section', 'comms-section', 'master-section', 'nombre', 'telefono', 'fechaNacimiento', 'search-create-btn', 'start-scan-btn', 'qr-reader-container', 'qr-reader', 'stop-scan-btn', 'client-panel', 'client-info', 'add-visit-btn', 'rewards-select', 'redeem-reward-btn', 'client-list-body', 'messages-container', 'message-input', 'send-message-btn', 'new-admin-password', 'visits-to-complete', 'rewards-editor', 'add-reward-btn', 'save-config-btn']; ids.forEach(id => { const camelCaseId = id.replace(/-([a-z])/g, g => g[1].toUpperCase()); DOM[camelCaseId] = document.getElementById(id); }); try { const savedData = localStorage.getItem('loyaltyCardData'); if (savedData) { const cardData = JSON.parse(savedData); displayCard(cardData.client, cardData.config, cardData.lastUpdated); DOM.clientLoginSection.style.display = 'none'; DOM.clientCardSection.style.display = 'block'; } else { showView('client-view'); } } catch (e) { console.warn("Could not access localStorage. Starting in online-only mode.", e); showView('client-view'); } DOM.viewCardBtn.addEventListener('click', () => { const currentTime = Date.now(); if (DOM.clientTelefono.value.trim() === '12345') { if (currentTime - lastClickTimestamp > 1000) secretClickCount = 0; secretClickCount++; lastClickTimestamp = currentTime; if (secretClickCount >= 10) { secretClickCount = 0; showView('login-view'); return; } } else { handleViewCard(); } }); DOM.adminLoginBtn.addEventListener('click', handleAdminLogin); DOM.searchCreateBtn.addEventListener('click', handleSearchOrCreate); DOM.addVisitBtn.addEventListener('click', handleAddVisit); DOM.redeemRewardBtn.addEventListener('click', handleRedeemReward); DOM.startScanBtn.addEventListener('click', startScanner); DOM.stopScanBtn.addEventListener('click', stopScanner); DOM.sendMessageBtn.addEventListener('click', handleSendMessage); DOM.addRewardBtn.addEventListener('click', addReward); DOM.saveConfigBtn.addEventListener('click', saveConfiguration); if ('serviceWorker'in navigator) { navigator.serviceWorker.register(`sw.js?v=${new Date().getTime()}`).then(reg => console.log('SW registered!')).catch(err => console.log('SW registration failed:', err)); } }
-function showToast(message, isError = false) { if (!DOM.toast) return; DOM.toastMessage.textContent = message; DOM.toast.className = `fixed bottom-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity duration-300 z-50 ${isError ? 'bg-red-600' : 'bg-green-600'}`; DOM.toast.classList.remove('opacity-0'); setTimeout(() => { DOM.toast.classList.add('opacity-0'); }, 5000); }
-function showLoader() { if (DOM.loader) DOM.loader.style.display = 'flex'; }
-function hideLoader() { if (DOM.loader) DOM.loader.style.display = 'none'; }
-function showView(viewId, resetClientForm = false) { document.querySelectorAll('.view').forEach(v => v.style.display = 'none'); const targetView = document.getElementById(viewId); if (targetView) targetView.style.display = viewId === 'login-view' ? 'flex' : 'block'; if (resetClientForm) { try { localStorage.removeItem('loyaltyCardData'); } catch (e) { console.warn("Could not clear localStorage."); } if (DOM.clientLoginSection) DOM.clientLoginSection.style.display = 'block'; if (DOM.clientCardSection) DOM.clientCardSection.style.display = 'none'; if (DOM.clientTelefono) DOM.clientTelefono.value = ''; if (DOM.clientFechaNacimiento) DOM.clientFechaNacimiento.value = ''; } }
-async function apiCall(action,payload,method="POST"){showLoader();try{if(!navigator.onLine)throw new Error("No hay conexión a internet.");let response;if("GET"===method){const params=new URLSearchParams(payload);response=await fetch(`${SCRIPT_URL}?action=${action}&${params.toString()}`)}else response=await fetch(SCRIPT_URL,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,...payload})});if(!response.ok)throw new Error(`Error de red: ${response.statusText}`);const result=await response.json();if(result.status==="error")throw new Error(result.message);return result}catch(error){showToast(error.message||"Error de conexión.",!0);console.error("API Call Error:",error);return null}finally{hideLoader()}}
-async function handleViewCard(){const telefono=DOM.clientTelefono.value.trim(),fechaNacimiento=DOM.clientFechaNacimiento.value;if(!telefono||!fechaNacimiento)return showToast("Todos los campos son requeridos.",!0);const clientResult=await apiCall("buscarClientePorCredenciales",{telefono:telefono,fechaNacimiento:fechaNacimiento},"GET");if(clientResult){const configResult=await apiCall("obtenerConfiguracion",{},"GET");if(configResult){const cardData={client:clientResult.data,config:configResult.data,lastUpdated:(new Date).toISOString()};try{localStorage.setItem("loyaltyCardData",JSON.stringify(cardData))}catch(e){console.warn("Could not save to localStorage.",e),showToast("No se pudo guardar la tarjeta para verla sin conexión.",!0)}displayCard(cardData.client,cardData.config,cardData.lastUpdated),DOM.clientLoginSection.style.display="none",DOM.clientCardSection.style.display="block"}}}
-function displayCard(clientData,configData,lastUpdated){DOM.clientName.textContent=clientData.nombre,DOM.clientVisits.textContent=clientData.visitas,DOM.qrcode.innerHTML="",new QRCode(DOM.qrcode,{text:clientData.folio,width:160,height:160,colorDark:"#000000",colorLight:"#ffffff"}),DOM.lastUpdated.textContent=(new Date(lastUpdated)).toLocaleString();const rewardsList=DOM.rewardsList;rewardsList.innerHTML="";const checkIcon='<svg class="w-6 h-6 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',hourglassIcon='<svg class="w-6 h-6 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';(configData.rewards||[]).forEach(reward=>{const isEligible=parseInt(clientData.visitas)>=parseInt(reward.valor),rewardElement=document.createElement("div");rewardElement.className=`p-4 rounded-xl flex items-center font-medium shadow-sm transition ${isEligible?"bg-green-50 text-green-800":"bg-gray-100 text-gray-600"}`,rewardElement.innerHTML=`${isEligible?checkIcon:hourglassIcon}<span>${reward.clave} <span class="text-xs opacity-75">(${reward.valor} visitas)</span></span>`,rewardsList.appendChild(rewardElement)})}
-async function hashPassword(password){const encoder=new TextEncoder,data=encoder.encode(password),hashBuffer=await crypto.subtle.digest("SHA-256",data),hashArray=Array.from(new Uint8Array(hashBuffer));return hashArray.map(b=>b.toString(16).padStart(2,"0")).join("")}
-function logoutAdmin(){DOM.adminUser.value="",DOM.adminPass.value="",showView("client-view",!0)}
-function showAdminSection(sectionId){document.querySelectorAll(".admin-section").forEach(s=>s.style.display="none"),document.getElementById(sectionId).style.display="block",document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active-tab")),document.querySelector(`.nav-tab[data-section="${sectionId}"]`).classList.add("active-tab"),"comms-section"===sectionId&&fetchMessages()}
-async function handleAdminLogin(){const user=DOM.adminUser.value.trim(),pass=DOM.adminPass.value.trim();if(!user||!pass)return showToast("Usuario y contraseña son requeridos.",!0);const passwordHash=await hashPassword(pass),result=await apiCall("verificarAccesoMaestro",{usuario:user,passwordHash:passwordHash});result&&(showToast(result.message),showView("admin-panel"),currentSender="Maestro",fetchClientList(),loadConfigForEditing())}
-async function handleSearchOrCreate(){const nombre=DOM.nombre.value.trim(),telefono=DOM.telefono.value.trim(),fechaNacimiento=DOM.fechaNacimiento.value;if(!nombre||!telefono||!fechaNacimiento)return showToast("Todos los campos son requeridos.",!0);const result=await apiCall("buscarOcrearTarjeta",{nombre:nombre,telefono:telefono,fechaNacimiento:fechaNacimiento});result&&(currentClient=result.data,showToast(result.message),updateClientPanel(),fetchClientList())}
-async function handleAddVisit(){if(!currentClient)return;const result=await apiCall("registrarVisita",{folio:currentClient.folio});result&&(currentClient.visitas=result.newVisits,showToast("Visita registrada."),updateClientPanel(),fetchClientList())}
-async function handleRedeemReward(){if(!currentClient)return;const rewardsSelect=DOM.rewardsSelect,selectedCost=rewardsSelect.value,selectedName=rewardsSelect.options[rewardsSelect.selectedIndex].text.split(" (")[0];if(!selectedCost)return showToast("Selecciona una recompensa.",!0);if(parseInt(currentClient.visitas)<parseInt(selectedCost))return showToast("Visitas insuficientes.",!0);const result=await apiCall("canjearRecompensa",{folio:currentClient.folio,nombreCliente:currentClient.nombre,recompensa:selectedName,costo:selectedCost});result&&(currentClient.visitas=result.newVisits,showToast(`'${selectedName}' canjeada.`),updateClientPanel(),fetchClientList())}
-async function fetchClientList(){const result=await apiCall("listarTarjetas",{},"GET");result&&(allClients=result.data,renderClientList())}
-function updateClientPanel(){currentClient?(DOM.clientInfo.innerHTML=`<p><strong>Nombre:</strong> ${currentClient.nombre}</p><p><strong>Visitas:</strong> <span class="text-2xl font-bold text-gray-800">${currentClient.visitas}</span></p><p><strong>Folio:</strong> ${currentClient.folio}</p>`,DOM.clientPanel.style.display="block"):(DOM.clientPanel.style.display="none")}
-function renderClientList(){DOM.clientListBody.innerHTML=(allClients||[]).map(c=>`<tr class="border-b hover:bg-gray-50"><td class="p-3">${c.nombre}</td><td class="p-3 font-bold">${c.visitas}</td><td class="p-3">${c.telefono}</td><td class="p-3 text-sm text-gray-600">${c.folio}</td></tr>`).join("")}
-function onScanSuccess(decodedText,decodedResult){stopScanner();const client=allClients.find(c=>c.folio===decodedText);client?(DOM.nombre.value=client.nombre||"",DOM.telefono.value=client.telefono||"",DOM.fechaNacimiento.value=client.fechaNacimiento||"",currentClient=client,updateClientPanel(),showToast("Cliente encontrado por QR.")):showToast("Cliente no encontrado con este QR.",!0)}
-function onScanFailure(error){}
-function startScanner(){html5QrCode||(html5QrCode=new Html5Qrcode("qr-reader"));const qrReaderContainer=DOM.qrReaderContainer;qrReaderContainer.style.display="block";const config={fps:10,qrbox:{width:250,height:250}};html5QrCode.start({facingMode:"environment"},config,onScanSuccess,onScanFailure).catch(err=>{showToast("Error al iniciar escáner. Revisa los permisos de la cámara.",!0),qrReaderContainer.style.display="none"})}
-function stopScanner(){html5QrCode&&html5QrCode.isScanning&&html5QrCode.stop().then(()=>{DOM.qrReaderContainer.style.display="none"}).catch(err=>console.error("Error al detener el escáner.",err))}
-async function fetchMessages(){const result=await apiCall("obtenerMensajes",{},"GET");result&&renderMessages(result.data)}
-async function handleSendMessage(){const messageInput=DOM.messageInput,message=messageInput.value.trim();if(!message)return;const result=await apiCall("enviarMensaje",{remitente:currentSender,mensaje:message});result&&(messageInput.value="",fetchMessages())}
-function renderMessages(messages){DOM.messagesContainer.innerHTML=(messages||[]).map(msg=>`<div class="p-3 rounded-lg max-w-xs mb-2 ${msg.sender===currentSender?"bg-gray-800 text-white self-end":"bg-gray-200 self-start"}"><p class="font-bold text-sm">${msg.sender}</p><p>${msg.message}</p><p class="text-xs opacity-70 text-right">${(new Date(msg.timestamp)).toLocaleTimeString()}</p></div>`).join("")}
-async function loadConfigForEditing(){const result=await apiCall("obtenerConfiguracion",{},"GET");if(result){appConfig=result.data,DOM.visitsToComplete.value=appConfig.rules.VisitasParaCompletar||10;const rewardsSelect=DOM.rewardsSelect;rewardsSelect.innerHTML='<option value="">-- Canjear Recompensa --</option>',(appConfig.rewards||[]).forEach(r=>{rewardsSelect.innerHTML+=`<option value="${r.valor}">${r.clave} (${r.valor} visitas)</option>`}),renderRewardsEditor()}}
-function renderRewardsEditor(){DOM.rewardsEditor.innerHTML=(appConfig.rewards||[]).map((reward,index)=>`<div class="flex items-center gap-2 p-2 bg-gray-50 rounded"><input type="text" value="${reward.clave}" data-index="${index}" class="input-field reward-name flex-grow" placeholder="Nombre recompensa"><input type="number" value="${reward.valor}" data-index="${index}" class="input-field reward-cost w-24" placeholder="Costo"><button class="btn-danger text-sm py-1 px-2" onclick="removeReward(${index})">X</button></div>`).join("")}
-function addReward(){appConfig.rewards||(appConfig.rewards=[]),appConfig.rewards.push({clave:"",valor:""}),renderRewardsEditor()}
-function removeReward(index){appConfig.rewards.splice(index,1),renderRewardsEditor()}
-async function saveConfiguration(){const newConfig={rules:{VisitasParaCompletar:DOM.visitsToComplete.value},rewards:[]};document.querySelectorAll(".reward-name").forEach((nameInput,i)=>{const costInput=document.querySelectorAll(".reward-cost")[i];nameInput.value&&costInput.value&&newConfig.rewards.push({clave:nameInput.value.trim(),valor:costInput.value.trim()})});const newPassword=DOM.newAdminPassword.value.trim();newPassword&&(newConfig.passwordHash=await hashPassword(newPassword));const result=await apiCall("guardarConfiguracion",{config:newConfig});result&&(showToast("Configuración guardada."),DOM.newAdminPassword.value="",loadConfigForEditing())}
-document.addEventListener('DOMContentLoaded', initializeApp);
-</script>
+function doPost(e) {
+  try {
+    const request = JSON.parse(e.postData.contents);
+    const action = request.action;
+    switch (action) {
+      case 'buscarOcrearTarjeta': return handleResponse(buscarOcrearTarjeta(request.nombre, request.telefono, request.fechaNacimiento));
+      case 'registrarVisita': return handleResponse(registrarVisita(request.folio));
+      case 'canjearRecompensa': return handleResponse(canjearRecompensa(request.folio, request.nombreCliente, request.recompensa, request.costo));
+      case 'guardarConfiguracion': return handleResponse(guardarConfiguracion(request.config));
+      case 'enviarMensaje': return handleResponse(enviarMensaje(request.remitente, request.mensaje));
+      case 'verificarAccesoMaestro': return handleResponse(verificarAccesoMaestro(request.usuario, request.passwordHash));
+      default: return handleResponse({ status: 'error', message: 'Acción POST no válida.' });
+    }
+  } catch (error) {
+    Logger.log(`Error en doPost: ${error.toString()}`);
+    return handleResponse({ status: 'error', message: `Error fatal en el servidor (doPost): ${error.message}`});
+  }
+}
 
-</body>
-</html>
+function handleResponse(data) {
+  return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+}
+
+// === LÓGICA DE SEGURIDAD ===
+function verificarAccesoMaestro(usuario, passwordHash) {
+  try {
+    if (usuario.toLowerCase() !== 'admin') {
+      return { status: 'error', message: 'Usuario incorrecto.' };
+    }
+    let values = [];
+    if (configSheet.getLastRow() > 1) {
+        values = configSheet.getRange("A2:C" + configSheet.getLastRow()).getValues();
+    }
+    let adminPasswordHash = null;
+    let hashRowIndex = -1; 
+    for (let i = 0; i < values.length; i++) {
+      if (values[i][0] === 'Credencial' && values[i][1] === 'AdminPasswordHash') {
+        adminPasswordHash = values[i][2];
+        hashRowIndex = i + 2;
+        break;
+      }
+    }
+    if (!adminPasswordHash || String(adminPasswordHash).trim() === '') {
+      if (hashRowIndex !== -1) {
+        configSheet.getRange(hashRowIndex, 3).setValue(passwordHash);
+      } else {
+        configSheet.appendRow(['Credencial', 'AdminPasswordHash', passwordHash]);
+      }
+      return { status: 'success', message: '¡Contraseña configurada! Acceso concedido.' };
+    }
+    if (adminPasswordHash === passwordHash) {
+      return { status: 'success', message: 'Acceso concedido.' };
+    } else {
+      return { status: 'error', message: 'Contraseña incorrecta.' };
+    }
+  } catch (e) {
+    Logger.log("Error en verificarAccesoMaestro: " + e.toString());
+    return { status: 'error', message: 'Error de servidor al verificar la contraseña: ' + e.message };
+  }
+}
+
+// === LÓGICA DE CLIENTES Y OTRAS ===
+function buscarClientePorCredenciales(telefono, fechaNacimiento) { const data = clientesSheet.getDataRange().getValues(); for (let i = 1; i < data.length; i++) { const sheetDate = data[i][4] ? new Date(data[i][4]).toISOString().split('T')[0] : ''; if (String(data[i][3]) == String(telefono) && sheetDate == String(fechaNacimiento)) { return { status: 'success', data: { folio: data[i][0], nombre: data[i][1], visitas: data[i][2] } }; } } return { status: 'error', message: 'Cliente no encontrado. Verifica tus datos.' }; }
+function buscarOcrearTarjeta(nombre, telefono, fechaNacimiento) { const data = clientesSheet.getDataRange().getValues(); for (let i = 1; i < data.length; i++) { const sheetDate = data[i][4] ? new Date(data[i][4]).toISOString().split('T')[0] : ''; if (String(data[i][3]) == String(telefono) && sheetDate == String(fechaNacimiento)) { return { status: 'success', message: 'Cliente encontrado.', data: { folio: data[i][0], nombre: data[i][1], visitas: data[i][2] } }; } } let folio; do { folio = `F-${nombre.substring(0,2).toUpperCase()}${telefono.slice(-2)}${fechaNacimiento.substring(8,10)}${Math.random().toString(36).substring(2,5).toUpperCase()}`; } while (data.some(row => row[0] === folio)); clientesSheet.appendRow([folio, nombre, 0, telefono, new Date(fechaNacimiento)]); return { status: 'success', message: 'Cliente creado con éxito.', data: { folio, nombre, visitas: 0 } }; }
+function registrarVisita(folio) { const range = clientesSheet.getDataRange(); const values = range.getValues(); for (let i = 1; i < values.length; i++) { if (values[i][0] === folio) { const newVisits = Number(values[i][2]) + 1; clientesSheet.getRange(i + 1, 3).setValue(newVisits); return { status: 'success', newVisits }; } } return { status: 'error', message: 'Folio no encontrado.' }; }
+function canjearRecompensa(folio, nombreCliente, recompensa, costo) { const range = clientesSheet.getDataRange(); const values = range.getValues(); for (let i = 1; i < values.length; i++) { if (values[i][0] === folio) { const currentVisits = Number(values[i][2]); if (currentVisits >= Number(costo)) { const newVisits = currentVisits - Number(costo); clientesSheet.getRange(i + 1, 3).setValue(newVisits); transaccionesSheet.appendRow([new Date(), folio, nombreCliente, recompensa, costo]); return { status: 'success', newVisits }; } else { return { status: 'error', message: 'Visitas insuficientes.' }; } } } return { status: 'error', message: 'Folio no encontrado.' }; }
+function listarTarjetas() { const data = clientesSheet.getDataRange().getValues(); data.shift(); const clients = data.map(row => ({ folio: row[0], nombre: row[1], visitas: row[2], telefono: row[3], fechaNacimiento: row[4] ? new Date(row[4]).toISOString().split('T')[0] : '' })); return { status: 'success', data: clients }; }
+function obtenerConfiguracion() { const data = configSheet.getDataRange().getValues(); const config = { rules: {}, rewards: [] }; data.forEach((row, index) => { if (index === 0) return; const [tipo, clave, valor] = row; if (tipo === 'Regla') config.rules[clave] = valor; if (tipo === 'Recompensa') config.rewards.push({ clave, valor }); }); return { status: 'success', data: config }; }
+function guardarConfiguracion(config) { const lastRow = configSheet.getLastRow(); if (lastRow > 1) { configSheet.getRange('A2:C' + lastRow).clearContent(); } const newRows = []; if (config.passwordHash) { newRows.push(['Credencial', 'AdminPasswordHash', config.passwordHash]); } for (const key in config.rules) { newRows.push(['Regla', key, config.rules[key]]); } config.rewards.forEach(r => { newRows.push(['Recompensa', r.clave, r.valor]); }); if (newRows.length > 0) { configSheet.getRange(2, 1, newRows.length, 3).setValues(newRows); } return { status: 'success', message: 'Configuración guardada.' }; }
+function enviarMensaje(remitente, mensaje) { mensajesSheet.appendRow([new Date(), remitente, mensaje]); return { status: 'success' }; }
+function obtenerMensajes() { const data = mensajesSheet.getDataRange().getValues(); const messages = data.map(row => ({ timestamp: row[0], sender: row[1], message: row[2] })); return { status: 'success', data: messages.slice(-50).reverse() }; }
