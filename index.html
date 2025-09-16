@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRANNA </title>
+    <title>PRANNA</title>
     <meta name="theme-color" content="#000000"/>
     <link rel="apple-touch-icon" href="https://placehold.co/192x192/000000/FFFFFF?text=P">
     <link rel="manifest" href="manifest.json">
@@ -38,39 +38,39 @@
 
     <div id="loader" class="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50" style="display: none;"><div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-brand"></div></div>
     <div id="toast" class="fixed bottom-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50"><p id="toast-message"></p></div>
-    <div id="client-view" class="view"><div class="container mx-auto p-6 max-w-md min-h-screen flex flex-col justify-center"><div id="client-login-section"><header class="mb-8 text-center"><div id="logo-container" class="mx-auto mb-4 w-24 h-24"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" width="1200" height="400">
+    <div id="client-view" class="view"><div class="container mx-auto p-6 max-w-md min-h-screen flex flex-col justify-center"><div id="client-login-section"><header class="mb-8 text-center"><div id="logo-container" class="mx-auto mb-4 w-24 h-24"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3000 1000" width="3000" height="1000">
   <style>
     .wordmark {
       font-family: "Playfair Display", "Times New Roman", serif;
-      font-size: 160px;
+      font-size: 420px;
       font-weight: 400;
       fill: #000;
-      letter-spacing: 10px;
+      letter-spacing: 25px;
     }
     .subtitle {
       font-family: "Helvetica Neue", Arial, sans-serif;
-      font-size: 36px;
+      font-size: 100px;
       font-weight: 700;
       fill: #000;
-      letter-spacing: 3px;
+      letter-spacing: 8px;
     }
     .underline {
       stroke: #000;
-      stroke-width: 2;
+      stroke-width: 5;
     }
   </style>
 
   <!-- Wordmark -->
-  <text x="50%" y="150" text-anchor="middle" class="wordmark">PRANNA</text>
+  <text x="50%" y="420" text-anchor="middle" class="wordmark">PRANNA</text>
 
   <!-- Underline -->
-  <line x1="250" y1="180" x2="950" y2="180" class="underline" />
+  <line x1="600" y1="480" x2="2400" y2="480" class="underline" />
 
   <!-- Subtitle -->
-  <text x="50%" y="240" text-anchor="middle" class="subtitle">
+  <text x="50%" y="640" text-anchor="middle" class="subtitle">
     BEAUTY STUDIO | CLOTHING BOUTIQUE
   </text>
-</svg></div><h1 class="text-3xl font-bold text-gray-900">PRANNA </h1><p class="text-gray-600 mt-2">Belleza a tu alcance </p></header><div class="space-y-4"><input type="tel" id="client-telefono" placeholder="Tu Teléfono" class="input-field-visual focus:ring-brand"><input type="text" id="client-fechaNacimiento" placeholder="Tu Fecha de Nacimiento" class="input-field-visual focus:ring-brand" onfocus="(this.type='date')"><button id="view-card-btn" class="btn-primary-visual w-full">Consultar / Refrescar</button></div></div><div id="client-card-section" style="display: none;" class="text-center"><button onclick="showView('client-view', true)" class="absolute top-6 left-6 text-gray-500 hover:text-gray-800 transition">&larr; Volver</button><h2 class="text-3xl font-bold mb-2" id="client-name"></h2><p class="text-gray-500 mb-4">Número total de visitas</p><p class="text-8xl font-bold text-brand my-4" id="client-visits"></p><div id="qrcode" class="flex justify-center p-2 bg-white my-6"></div><div id="rewards-list" class="space-y-3 text-left w-full"></div><p class="text-xs text-gray-400 mt-4">Las recompensas en verde ✅ ya están disponibles para canjear en tienda.</p><p class="text-xs text-gray-400 mt-2">Última actualización: <span id="last-updated">Nunca</span></p></div></div></div>
+</svg></div><h1 class="text-3xl font-bold text-gray-900">PRANNA</h1><p class="text-gray-600 mt-2">Belleza a tu alcance</p></header><div class="space-y-4"><input type="tel" id="client-telefono" placeholder="Tu Teléfono" class="input-field-visual focus:ring-brand"><input type="text" id="client-fechaNacimiento" placeholder="Tu Fecha de Nacimiento" class="input-field-visual focus:ring-brand" onfocus="(this.type='date')"><button id="view-card-btn" class="btn-primary-visual w-full">Consultar / Refrescar</button></div></div><div id="client-card-section" style="display: none;" class="text-center"><button onclick="showView('client-view', true)" class="absolute top-6 left-6 text-gray-500 hover:text-gray-800 transition">&larr; Volver</button><h2 class="text-3xl font-bold mb-2" id="client-name"></h2><p class="text-gray-500 mb-4">Número total de visitas</p><p class="text-8xl font-bold text-brand my-4" id="client-visits"></p><div id="qrcode" class="flex justify-center p-2 bg-white my-6"></div><div id="rewards-list" class="space-y-3 text-left w-full"></div><p class="text-xs text-gray-400 mt-4">Las recompensas en verde ✅ ya están disponibles para canjear en tienda.</p><p class="text-xs text-gray-400 mt-2">Última actualización: <span id="last-updated">Nunca</span></p></div></div></div>
     <div id="login-view" class="view fixed inset-0 bg-black bg-opacity-60 items-center justify-center p-4 z-40" style="display: none;"><div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm"><h2 class="text-2xl font-semibold text-center mb-6">Acceso de Administrador</h2><div class="space-y-4"><input type="text" id="admin-user" placeholder="Usuario (ej. admin)" class="input-field focus:ring-brand"><input type="password" id="admin-pass" placeholder="Contraseña" class="input-field focus:ring-brand"><button id="admin-login-btn" class="btn-primary w-full">Ingresar</button><button onclick="showView('client-view')" class="btn-secondary w-full">Cancelar</button></div></div></div>
     <div id="admin-panel" class="view bg-gray-50" style="display: none;"><div class="container mx-auto p-4 md:p-6 max-w-4xl"><header class="mb-6 flex justify-between items-center"><div><h1 class="text-3xl font-bold text-gray-900">Panel de Administrador</h1><p class="text-gray-600">Gestión del Sistema de Lealtad</p></div><button onclick="logoutAdmin()" class="btn-secondary">Salir</button></header><nav class="flex justify-center border-b-2 border-gray-200 mb-6"><button onclick="showAdminSection('vendor-section')" class="nav-tab active-tab" data-section="vendor-section">Vendedor</button><button onclick="showAdminSection('comms-section')" class="nav-tab" data-section="comms-section">Comunicación</button><button onclick="showAdminSection('master-section')" class="nav-tab" data-section="master-section">Panel Maestro</button></nav><main><section id="vendor-section" class="admin-section"><div class="bg-white p-6 rounded-lg shadow-md"><h2 class="text-2xl font-semibold mb-4">Gestión de Clientes</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"><input type="text" id="nombre" placeholder="Nombre Completo" class="input-field focus:ring-brand"><input type="tel" id="telefono" placeholder="Teléfono" class="input-field focus:ring-brand"><input type="text" id="fechaNacimiento" placeholder="Fecha de Nacimiento" class="input-field focus:ring-brand" onfocus="(this.type='date')"><button id="search-create-btn" class="btn-primary md:col-span-2">Buscar o Crear Tarjeta</button></div><div class="text-center mb-6"><button id="start-scan-btn" class="btn-secondary">Escanear QR</button><div id="qr-reader-container" class="mt-4 w-full max-w-sm mx-auto" style="display: none;"><div id="qr-reader"></div><button id="stop-scan-btn" class="btn-danger mt-2">Detener Escáner</button></div></div><div id="client-panel" style="display: none;" class="mt-6 border-t pt-6"><h3 class="text-xl font-semibold mb-4">Información del Cliente</h3><div id="client-info" class="mb-4 bg-blue-50 p-4 rounded-lg"></div><div class="flex flex-wrap gap-4 items-center"><button id="add-visit-btn" class="btn-success">+1 Visita</button><div class="flex items-center gap-2"><select id="rewards-select" class="input-field focus:ring-brand"></select><button id="redeem-reward-btn" class="btn-warning flex-shrink-0">Canjear</button></div></div></div><div class="mt-8"><h3 class="text-xl font-semibold mb-4">Lista de Clientes</h3><div class="overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr><th class="table-header">Nombre</th><th class="table-header">Visitas</th><th class="table-header">Teléfono</th><th class="table-header">Folio</th></tr></thead><tbody id="client-list-body"></tbody></table></div></div></div></section><section id="comms-section" class="admin-section" style="display: none;"><div class="bg-white p-6 rounded-lg shadow-md"><h2 class="text-2xl font-semibold mb-4">Comunicación Interna</h2><div class="space-y-4"><div id="messages-container" class="h-80 overflow-y-auto border p-4 rounded-lg bg-gray-50 flex flex-col-reverse"></div><div class="flex gap-2"><input type="text" id="message-input" placeholder="Escribe tu mensaje..." class="input-field flex-grow focus:ring-brand"><button id="send-message-btn" class="btn-primary">Enviar</button></div></div></div></section><section id="master-section" class="admin-section" style="display: none;"><div class="bg-white p-6 rounded-lg shadow-md"><h2 class="text-2xl font-semibold mb-4">Panel de Control Maestro</h2><div class="mb-6 p-4 border border-yellow-300 bg-yellow-50 rounded-lg"><h3 class="text-xl font-medium mb-2">Seguridad</h3><p class="text-sm text-yellow-800 mb-2">Establece o actualiza la contraseña. Si no hay contraseña, la primera que guardes será la nueva.</p><input type="password" id="new-admin-password" class="input-field w-64 focus:ring-brand" placeholder="Nueva Contraseña"></div><div class="mb-6"><h3 class="text-xl font-medium mb-2">Reglas Generales</h3><div class="flex items-center gap-4"><label for="visits-to-complete" class="font-medium">Visitas para Recompensa:</label><input type="number" id="visits-to-complete" class="input-field w-24 focus:ring-brand"></div></div><div><h3 class="text-xl font-medium mb-2">Gestionar Recompensas</h3><div id="rewards-editor" class="space-y-3 mb-4"></div><button id="add-reward-btn" class="btn-secondary">+ Añadir Recompensa</button></div><div class="mt-8 border-t pt-6 text-right"><button id="save-config-btn" class="btn-success">Guardar Configuración</button></div></div></section></main></div></div>
 
@@ -79,7 +79,7 @@
 window.onerror = function(message, source, lineno, colno, error) { showToast(`Error: ${message} en línea ${lineno}`, true); hideLoader(); return true; };
 
 // --- CONFIGURATION & STATE ---
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby7CakQjyiWOm7QScmft5wrCdvtVFYjY045DXpvGRj_pqp45i-G_QsubatsnrFkvfKN/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwBLCfZTjB_Nu8HRnQABvjHALmwKl2LPVez9F6_931hrv-KZCrQ9fDo2zeecAS-oKhK/exec';
 let currentClient = null, allClients = [], appConfig = {}, html5QrCode = null, currentSender = 'Vendedor';
 let secretClickCount = 0; let lastClickTimestamp = 0;
 const DOM = {}; // Object to hold all DOM elements
