@@ -1,21 +1,41 @@
-{
-    "name": "PRANNA ",
-    "short_name": "PRANNA ",
-    "start_url": "index.html",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#000000",
-    "description": "Aplicación de tarjeta de lealtad para PRANNA .",
-    "icons": [
-        {
-            "src": "https://placehold.co/192x192/000000/FFFFFF?text=P",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "https://placehold.co/512x512/000000/FFFFFF?text=P",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ]
-}
+const CACHE_NAME = 'loyalty-app-cache-v2'; // Increased version number to force update
+const urlsToCache = [
+  './',
+  './index.html',
+  './manifest.json'
+];
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Opened cache and caching files');
+        return cache.addAll(urlsToCache);
+      })
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        return response || fetch(event.request);
+      })
+  );
+});
