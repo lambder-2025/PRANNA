@@ -1,24 +1,16 @@
-{
-  "name": "PRANNA  – App de Lealtad",
-  "short_name": "PRANNA ",
-  "description": "Aplicación de lealtad de PRANNA ",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "orientation": "portrait",
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
-  "icons": [
-    {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMTkyJyBoZWlnaHQ9JzE5MicgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMzAwMCAxMDAwIiB3aWR0aD0iMzAwMCIgaGVpZ2h0PSIxMDAwIj4KICA8c3R5bGU+CiAgICAud29yZG1hcmsgewogICAgICBmb250LWZhbWlseTogIlBsYXlmYWlyIERpc3BsYXkiLCAiVGltZXMgTmV3IFJvbWFuIiwgc2VyaWY7CiAgICAgIGZvbnQtc2l6ZTogNDIwcHg7CiAgICAgIGZvbnQtd2VpZ2h0OiA0MDA7CiAgICAgIGZpbGw6ICMwMDA7CiAgICAgIGxldHRlci1zcGFjaW5nOiAyNXB4OwogICAgfQogICAgLnN1YnRpdGxlIHsKICAgICAgZm9udC1mYW1pbHk6ICJIZWx2ZXRpY2EgTmV1ZSIsIEFyaWFsLCBzYW5zLXNlcmlmOwogICAgICBmb250LXNpemU6IDEwMHB4OwogICAgICBmb250LXdlaWdodDogNzAwOwogICAgICBmaWxsOiAjMDAwOwogICAgICBsZXR0ZXItc3BhY2luZzogOHB4OwogICAgfQogICAgLnVuZGVybGluZSB7CiAgICAgIHN0cm9rZTogIzAwMDsKICAgICAgc3Ryb2tlLXdpZHRoOiA1OwogICAgfQogIDwvc3R5bGU+CgogIDwhLS0gV29yZG1hcmsgLS0+CiAgPHRleHQgeD0iNTAlIiB5PSI0MjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJ3b3JkbWFyayI+UFJBTk5BPC90ZXh0PgoKICA8IS0tIFVuZGVybGluZSAtLT4KICA8bGluZSB4MT0iNjAwIiB5MT0iNDgwIiB4Mj0iMjQwMCIgeTI9IjQ4MCIgY2xhc3M9InVuZGVybGluZSIgLz4KCiAgPCEtLSBTdWJ0aXRsZSAtLT4KICA8dGV4dCB4PSI1MCUiIHk9IjY0MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9InN1YnRpdGxlIj4KICAgIEJFQVVUWSBTVFVESU8gfCBDTE9USElORyBCT1VUSVFVRQogIDwvdGV4dD4KPC9zdmc+",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nNTEyJyBoZWlnaHQ9JzUxMicgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMzAwMCAxMDAwIiB3aWR0aD0iMzAwMCIgaGVpZ2h0PSIxMDAwIj4KICA8c3R5bGU+CiAgICAud29yZG1hcmsgewogICAgICBmb250LWZhbWlseTogIlBsYXlmYWlyIERpc3BsYXkiLCAiVGltZXMgTmV3IFJvbWFuIiwgc2VyaWY7CiAgICAgIGZvbnQtc2l6ZTogNDIwcHg7CiAgICAgIGZvbnQtd2VpZ2h0OiA0MDA7CiAgICAgIGZpbGw6ICMwMDA7CiAgICAgIGxldHRlci1zcGFjaW5nOiAyNXB4OwogICAgfQogICAgLnN1YnRpdGxlIHsKICAgICAgZm9udC1mYW1pbHk6ICJIZWx2ZXRpY2EgTmV1ZSIsIEFyaWFsLCBzYW5zLXNlcmlmOwogICAgICBmb250LXNpemU6IDEwMHB4OwogICAgICBmb250LXdlaWdodDogNzAwOwogICAgICBmaWxsOiAjMDAwOwogICAgICBsZXR0ZXItc3BhY2luZzogOHB4OwogICAgfQogICAgLnVuZGVybGluZSB7CiAgICAgIHN0cm9rZTogIzAwMDsKICAgICAgc3Ryb2tlLXdpZHRoOiA1OwogICAgfQogIDwvc3R5bGU+CgogIDwhLS0gV29yZG1hcmsgLS0+CiAgPHRleHQgeD0iNTAlIiB5PSI0MjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGNsYXNzPSJ3b3JkbWFyayI+UFJBTk5BPC90ZXh0PgoKICA8IS0tIFVuZGVybGluZSAtLT4KICA8bGluZSB4MT0iNjAwIiB5MT0iNDgwIiB4Mj0iMjQwMCIgeTI9IjQ4MCIgY2xhc3M9InVuZGVybGluZSIgLz4KCiAgPCEtLSBTdWJ0aXRsZSAtLT4KICA8dGV4dCB4PSI1MCUiIHk9IjY0MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgY2xhc3M9InN1YnRpdGxlIj4KICAgIEJFQVVUWSBTVFVESU8gfCBDTE9USElORyBCT1VUSVFVRQogIDwvdGV4dD4KPC9zdmc+",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
-}
+const CACHE_NAME = 'loyalty-app-cache-v1';
+const ASSETS_TO_CACHE = [ './', './index.html' ];
+
+self.addEventListener('install', event => {
+  event.waitUntil( caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS_TO_CACHE)) );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil( caches.keys().then(keyList => Promise.all(keyList.map(key => { if (key !== CACHE_NAME) return caches.delete(key); }))) );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', event => {
+  event.respondWith( fetch(event.request).catch(() => caches.match(event.request)) );
+});
