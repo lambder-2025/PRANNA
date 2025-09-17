@@ -1,28 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRANNA  - App de Lealtad</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ffffff">
 <style>
-  .hidden { display: none; } .view { padding: 1rem; } .card { background: #fff; border-radius: 8px; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #ffffff; }
+  .hidden { display: none !important; }
+  .view { padding: 1.5rem; max-width: 500px; margin: 0 auto; }
+  .card { background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  header { background: #ffffff; color: #000000; padding: 2rem 1rem; text-align: center; }
+  input { width: 100%; padding: 1rem; margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+  button { width: 100%; padding: 1rem; border: none; border-radius: 8px; background: #ffffff; color: #000000; font-size: 1rem; font-weight: bold; cursor: pointer; }
   .tab-buttons { display: flex; gap: 8px; margin-bottom: 1rem; }
-  .tab-buttons button { flex: 1; padding: 0.5rem; border: 1px solid #ccc; background: #f0f0f0; cursor: pointer; }
-  .tab-buttons button.active { background: #ffffff; color: #000000; border-color: #ffffff; }
+  .tab-buttons button { flex: 1; background: #f0f0f0; color: #333; }
+  .tab-buttons button.active { background: #ffffff; color: #000000; }
   .chat-box { height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; background: #f9f9f9; }
-  .chat-message { margin-bottom: 8px; padding: 5px; border-radius: 5px; }
-  .chat-message strong { color: #ffffff; }
 </style>
 </head>
 <body>
+
 <header>
-  </header>
+  <h2>PRANNA </h2>
+</header>
 
 <main>
   <div id="customerLoginView" class="view">
     <div class="card">
-      <h3>Iniciar Sesión Cliente</h3>
-      <input id="phone" placeholder="Teléfono (12345 para admin)" type="tel">
-      <input id="bdate" type="date">
+      <h3>Iniciar Sesión</h3>
+      <input id="phone" placeholder="Teléfono (12345 para admin)">
+      <input id="bdate" type="date" placeholder="Fecha de Nacimiento">
       <button id="loginBtn">Ingresar</button>
-      <small class="center" style="margin-top:1rem; display:block;">Última actualización: <span id="lastUpdated">Nunca</span></small>
     </div>
   </div>
 
@@ -35,28 +45,56 @@
     </div>
   </div>
 
+  <div id="appView" class="view hidden">
+      </div>
+
   <div id="adminDashboardView" class="view hidden">
-    <div class="card">
-      <div class="tab-buttons">
-        <button class="tab-btn active" data-tab="search">Buscar</button>
-        <button class="tab-btn" data-tab="register">Registrar</button>
-        <button class="tab-btn" data-tab="chat">Chat</button>
       </div>
-      <div id="searchTab" class="tab-content"></div>
-      <div id="registerTab" class="tab-content hidden"></div>
-      <div id="chatTab" class="tab-content hidden">
-        <h3>Chat Interno</h3>
-        <div id="chatBox" class="chat-box"><p>Cargando mensajes...</p></div>
-        <textarea id="chatMessageInput" rows="2" placeholder="Escribe un mensaje..."></textarea>
-        <button id="sendChatMessageBtn">Enviar</button>
-      </div>
-    </div>
-    <button onclick="logout()">Salir</button>
-  </div>
 </main>
 
 <script>
-// El script completo con toda la lógica
+  const API_URL = 'https://script.google.com/macros/s/AKfycbwOKhMehdSSN5jnihqscyuNUWQf8_O2trftcRz2Gi4xEWD6p_2776vGgEP2TEapJfZz/exec';
+  let loginClickCount = 0;
+  let loginClickTimer = null;
+
+  function showView(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+    document.getElementById(viewId)?.classList.remove('hidden');
+  }
+
+  // LÓGICA DEL BOTÓN DE LOGIN PRINCIPAL
+  document.getElementById('loginBtn').addEventListener('click', () => {
+    const phoneInput = document.getElementById('phone');
+    if (phoneInput.value === '12345') {
+      loginClickCount++;
+      clearTimeout(loginClickTimer);
+      loginClickTimer = setTimeout(() => { loginClickCount = 0; }, 1500); // Reset after 1.5s
+      if (loginClickCount >= 10) {
+        loginClickCount = 0;
+        showView('adminLoginView');
+      }
+    } else {
+      loginCustomer();
+    }
+  });
+
+  async function loginCustomer() {
+    const phone = document.getElementById('phone').value;
+    const bdate = document.getElementById('bdate').value;
+    if (!phone || !bdate) {
+      alert('Datos incompletos');
+      return;
+    }
+    // Lógica para llamar al API para el login de cliente
+    console.log('Iniciando sesión como cliente...');
+  }
+  
+  // Event listener para el botón de login de admin
+  document.getElementById('adminLoginBtn').addEventListener('click', () => {
+    console.log('Iniciando sesión como admin...');
+    // Aquí iría la llamada al API para el login de admin
+  });
+
 </script>
 </body>
 </html>
