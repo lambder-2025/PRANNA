@@ -14,6 +14,7 @@
   header { background: #ffffff; color: #000000; padding: 2rem 1rem; text-align: center; }
   input { width: 100%; padding: 1rem; margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
   button { width: 100%; padding: 1rem; border: none; border-radius: 8px; background: #ffffff; color: #000000; font-size: 1rem; font-weight: bold; cursor: pointer; }
+  button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
   .tab-buttons { display: flex; gap: 8px; margin-bottom: 1rem; }
   .tab-buttons button { flex: 1; background: #f0f0f0; color: #333; }
   .tab-buttons button.active { background: #ffffff; color: #000000; }
@@ -30,7 +31,7 @@
   <div id="customerLoginView" class="view">
     <div class="card">
       <h3>Iniciar Sesión</h3>
-      <input id="phone" placeholder="Teléfono (12345 para admin)">
+      <input id="phone" placeholder="Teléfono">
       <input id="bdate" type="date" placeholder="Fecha de Nacimiento">
       <button id="loginBtn">Ingresar</button>
     </div>
@@ -39,7 +40,7 @@
   <div id="adminLoginView" class="view hidden">
     <div class="card">
       <h3>Acceso de Vendedor</h3>
-      <input id="adminUser" value="admin">
+      <input id="adminUser" value="admin" readonly>
       <input id="adminPass" type="password" placeholder="Contraseña">
       <button id="adminLoginBtn">Acceder</button>
     </div>
@@ -49,13 +50,38 @@
       </div>
 
   <div id="adminDashboardView" class="view hidden">
+      <div class="card">
+          <h3>Panel de Vendedor</h3>
+          <p>¡Bienvenido!</p>
+          <button onclick="logout()">Cerrar Sesión</button>
       </div>
+  </div>
 </main>
 
 <script>
   const API_URL = 'https://script.google.com/macros/s/AKfycbwOKhMehdSSN5jnihqscyuNUWQf8_O2trftcRz2Gi4xEWD6p_2776vGgEP2TEapJfZz/exec';
   let loginClickCount = 0;
   let loginClickTimer = null;
+  let currentAdminUser = null;
+
+  async function apiFetch(action, params = {}, button = null) {
+    if (button) button.disabled = true;
+    const url = new URL(API_URL);
+    url.searchParams.append('action', action);
+    for (const key in params) {
+      url.searchParams.append(key, params[key]);
+    }
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Error de red');
+      return await response.json();
+    } catch (error) {
+      console.error('Error en apiFetch:', error);
+      return { success: false, message: error.message };
+    } finally {
+      if (button) button.disabled = false;
+    }
+  }
 
   function showView(viewId) {
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
@@ -68,7 +94,7 @@
     if (phoneInput.value === '12345') {
       loginClickCount++;
       clearTimeout(loginClickTimer);
-      loginClickTimer = setTimeout(() => { loginClickCount = 0; }, 1500); // Reset after 1.5s
+      loginClickTimer = setTimeout(() => { loginClickCount = 0; }, 1500);
       if (loginClickCount >= 10) {
         loginClickCount = 0;
         showView('adminLoginView');
@@ -85,15 +111,35 @@
       alert('Datos incompletos');
       return;
     }
-    // Lógica para llamar al API para el login de cliente
     console.log('Iniciando sesión como cliente...');
+    // Lógica para llamar al API para el login de cliente
   }
   
   // Event listener para el botón de login de admin
-  document.getElementById('adminLoginBtn').addEventListener('click', () => {
-    console.log('Iniciando sesión como admin...');
-    // Aquí iría la llamada al API para el login de admin
+  document.getElementById('adminLoginBtn').addEventListener('click', async (event) => {
+    const username = document.getElementById('adminUser').value;
+    const password = document.getElementById('adminPass').value;
+    
+    if (!password) {
+      alert('Por favor, ingresa una contraseña.');
+      return;
+    }
+    
+    const result = await apiFetch('admin_login', { username, password }, event.target);
+    
+    if (result.success) {
+      currentAdminUser = username;
+      alert(result.message); // Muestra el mensaje de éxito
+      showView('adminDashboardView');
+    } else {
+      alert('Error: ' + result.message);
+    }
   });
+  
+  function logout() {
+    currentAdminUser = null;
+    showView('customerLoginView');
+  }
 
 </script>
 </body>
