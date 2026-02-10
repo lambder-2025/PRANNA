@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "titulo": "Refresco Gratis",
+    "visitasRequeridas": 5,
+    "descripcion": "Un refresco de 600ml a tu elección."
+  },
+  {
+    "id": 2,
+    "titulo": "50% Descuento",
+    "visitasRequeridas": 10,
+    "descripcion": "En cualquier producto de la tienda."
+  }
+]
