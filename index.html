@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Tarjeta</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4CAF50">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+
+<body>
+    <header class="app-header">
+        <h1>Mi Tarjeta</h1>
+        <div id="last-sync" class="status-indicator"></div>
+    </header>
+
+    <main id="app">
+        <!-- Loading View -->
+        <div id="loading-view" class="view active">
+            <div class="spinner"></div>
+            <p>Cargando...</p>
+        </div>
+
+        <!-- Login / Identify View -->
+        <div id="login-view" class="view hidden">
+            <h2>Bienvenido</h2>
+            <p>Ingresa tu ID o Teléfono para ver tus puntos.</p>
+            <form id="login-form">
+                <input type="text" id="user-id-input" placeholder="ID de Usuario / Teléfono" required>
+                <button type="submit" class="btn primary">Ver mis Puntos</button>
+            </form>
+            <div style="margin-top: 2rem; text-align: center;">
+                <p class="small">¿Eres administrador?</p>
+                <a href="admin.html" class="btn text">Ir al Panel Admin</a>
+            </div>
+        </div>
+
+        <!-- User Client View -->
+        <div id="client-view" class="view hidden">
+            <div class="card user-card">
+                <h2 id="user-name">Usuario</h2>
+                <div class="qr-container" id="user-qr"></div>
+                <p class="user-id-display" id="user-id-display">ID: ...</p>
+                <button id="logout-btn" class="btn text small">Salir</button>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-box">
+                    <span class="stat-value" id="visit-count">0</span>
+                    <span class="stat-label">Visitas</span>
+                </div>
+            </div>
+
+            <h3>Promociones Disponibles</h3>
+            <ul id="promo-list" class="promo-list">
+                <!-- Promos inserted here -->
+            </ul>
+        </div>
+    </main>
+
+    <!-- External Libs -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+
+    <!-- User Logic -->
+    <script type="module" src="js/user.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js');
+            });
+        }
+    </script>
+</body>
+
+</html>
