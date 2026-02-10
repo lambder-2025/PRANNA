@@ -1,0 +1,9 @@
+[
+  {
+    "id": "u-001",
+    "nombre": "Demo Usuario",
+    "telefono": "5551234567",
+    "visitas": 2,
+    "lastSync": "2024-01-01T00:00:00Z"
+  }
+]
