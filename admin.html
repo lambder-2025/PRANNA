@@ -38,12 +38,43 @@
         <!-- Admin Dashboard View -->
         <div id="admin-view" class="view hidden">
             <div class="admin-controls">
-                <button id="scan-btn" class="btn large">📷 Escanear Cliente</button>
+                <button id="scan-btn" class="btn large primary">📷 Escanear Cliente</button>
+                <button id="manage-users-btn" class="btn large secondary">👥 Gestionar Usuarios</button>
             </div>
 
             <div id="scanner-container" class="hidden">
                 <div id="reader"></div>
                 <button id="stop-scan" class="btn secondary">Detener Escaneo</button>
+            </div>
+
+            <!-- User Management View -->
+            <div id="user-management-view" class="hidden">
+                <h3>Directorio de Usuarios</h3>
+                <button id="add-user-btn" class="btn primary small">+ Nuevo Usuario</button>
+                <div class="search-box">
+                    <input type="text" id="user-search" placeholder="Buscar por Nombre...">
+                </div>
+                <ul id="user-list" class="user-list">
+                    <!-- Loaded dynamically -->
+                </ul>
+                <button id="close-manage-btn" class="btn secondary">Volver</button>
+            </div>
+
+            <!-- Edit User Modal/Form -->
+            <div id="edit-user-form" class="hidden card">
+                <h3 id="edit-form-title">Editar Usuario</h3>
+                <form id="user-crud-form">
+                    <input type="hidden" id="edit-user-id">
+                    <label>Nombre:</label>
+                    <input type="text" id="edit-user-name" required>
+                    <label>Teléfono:</label>
+                    <input type="text" id="edit-user-tel" required>
+                    <label>Visitas:</label>
+                    <input type="number" id="edit-user-visits" min="0" required>
+
+                    <button type="submit" class="btn primary">Guardar</button>
+                    <button type="button" id="cancel-edit-btn" class="btn secondary">Cancelar</button>
+                </form>
             </div>
 
             <div id="admin-user-details" class="hidden">
