@@ -1,12 +1,11 @@
 import { DB } from './db.js';
 import { Utils } from './utils.js';
 
-
-
 const app = {
     state: {
         isAdmin: false,
-        subUser: null
+        subUser: null,
+        users: [] // Cache for list
     },
 
     async init() {
@@ -65,24 +64,56 @@ const app = {
             location.reload();
         });
 
+        // Navigation
+        document.getElementById('manage-users-btn').addEventListener('click', () => {
+            document.getElementById('scanner-container').classList.add('hidden');
+            document.getElementById('admin-user-details').classList.add('hidden');
+            this.loadUserList();
+            document.getElementById('user-management-view').classList.remove('hidden');
+        });
+
+        document.getElementById('close-manage-btn').addEventListener('click', () => {
+            document.getElementById('user-management-view').classList.add('hidden');
+        });
+
+        // Search
+        document.getElementById('user-search').addEventListener('input', (e) => {
+            this.renderUserList(e.target.value);
+        });
+
+        // CRUD - Open Form
+        document.getElementById('add-user-btn').addEventListener('click', () => {
+            this.openEditForm(); // No user = create mode
+        });
+
+        document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+            document.getElementById('edit-user-form').classList.add('hidden');
+        });
+
+        // CRUD - Save
+        document.getElementById('user-crud-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await this.saveUser();
+        });
+
         // Scanner
         document.getElementById('scan-btn').addEventListener('click', () => this.startScanner());
         document.getElementById('stop-scan').addEventListener('click', () => this.stopScanner());
 
-        // User Details
+        // User Details (Scan Result)
         document.getElementById('close-user-details').addEventListener('click', () => {
             document.getElementById('admin-user-details').classList.add('hidden');
             document.getElementById('scan-btn').classList.remove('hidden');
             this.state.subUser = null;
         });
 
-        // Add Visit
+        // Add Visit (Scan Result)
         document.querySelectorAll('.action-add').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 if (!this.state.subUser) return;
                 try {
                     const updatedUser = await DB.addVisit(this.state.subUser.id);
-                    this.state.subUser = updatedUser;
+                    this.state.subUser = updatedUser; // Update local ref
                     this.renderAdminUserDetails(updatedUser);
                     alert('Visita agregada correctamente');
                     this.updateSyncStatus();
@@ -103,6 +134,100 @@ const app = {
         });
     },
 
+    // --- User Management (CRUD) ---
+    async loadUserList() {
+        try {
+            this.state.users = await DB.getAll('users');
+            this.renderUserList();
+        } catch (e) {
+            console.error(e);
+            alert('Error cargando usuarios');
+        }
+    },
+
+    renderUserList(filter = '') {
+        const list = document.getElementById('user-list');
+        list.innerHTML = '';
+        const term = filter.toLowerCase();
+
+        this.state.users
+            .filter(u => u.nombre.toLowerCase().includes(term) || u.id.includes(term))
+            .forEach(u => {
+                const li = document.createElement('li');
+                li.style.cssText = "padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;";
+                li.innerHTML = `
+                    <span><strong>${u.nombre}</strong> (${u.visitas} pts)</span>
+                    <button class="btn text small" data-id="${u.id}">Editar</button>
+                `;
+                li.querySelector('button').onclick = () => this.openEditForm(u);
+                list.appendChild(li);
+            });
+    },
+
+    openEditForm(user = null) {
+        const formTitle = document.getElementById('edit-form-title');
+        const idInput = document.getElementById('edit-user-id');
+        const nameInput = document.getElementById('edit-user-name');
+        const telInput = document.getElementById('edit-user-tel');
+        const visitsInput = document.getElementById('edit-user-visits');
+
+        if (user) {
+            formTitle.textContent = 'Editar Usuario';
+            idInput.value = user.id;
+            nameInput.value = user.nombre;
+            telInput.value = user.telefono;
+            visitsInput.value = user.visitas;
+        } else {
+            formTitle.textContent = 'Nuevo Usuario';
+            idInput.value = '';
+            nameInput.value = '';
+            telInput.value = '';
+            visitsInput.value = 0;
+        }
+
+        document.getElementById('edit-user-form').classList.remove('hidden');
+    },
+
+    async saveUser() {
+        const id = document.getElementById('edit-user-id').value;
+        const nombre = document.getElementById('edit-user-name').value;
+        const telefono = document.getElementById('edit-user-tel').value;
+        const visitas = parseInt(document.getElementById('edit-user-visits').value);
+
+        // Simple default password "1234" hash for new users
+        // Real app should ask for pass, but keeping it simple as requested
+        const defaultHash = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
+
+        let user;
+        if (id) {
+            // Update
+            user = await DB.getUser(id);
+            user.nombre = nombre;
+            user.telefono = telefono;
+            user.visitas = visitas;
+            user.updatedAt = new Date().toISOString();
+        } else {
+            // Create
+            user = {
+                id: `u-${Date.now()}`, // Simple ID gen
+                nombre,
+                telefono,
+                visitas,
+                passwordHash: defaultHash,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+        }
+
+        await DB.put('users', user);
+        await DB.logPendingAction({ type: id ? 'updateUser' : 'createUser', userId: user.id, timestamp: new Date().toISOString() });
+
+        document.getElementById('edit-user-form').classList.add('hidden');
+        this.loadUserList(); // Refresh list
+        this.updateSyncStatus();
+        alert('Usuario guardado');
+    },
+
     // --- Scanner Logic ---
     html5QrcodeScanner: null,
 
@@ -110,6 +235,7 @@ const app = {
         document.getElementById('scan-btn').classList.add('hidden');
         document.getElementById('scanner-container').classList.remove('hidden');
         document.getElementById('admin-user-details').classList.add('hidden');
+        document.getElementById('user-management-view').classList.add('hidden');
 
         this.html5QrcodeScanner = new Html5Qrcode("reader");
         const config = { fps: 10, qrbox: { width: 250, height: 250 } };
