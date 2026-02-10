@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Tarjeta de Lealtad</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+
+<body>
+    <header class="app-header">
+        <h1>Admin Panel</h1>
+        <div id="sync-status" class="status-indicator">Wait...</div>
+    </header>
+
+    <main id="app">
+        <!-- Loading View -->
+        <div id="loading-view" class="view active">
+            <div class="spinner"></div>
+            <p>Cargando sistema...</p>
+        </div>
+
+        <!-- Admin Auth View -->
+        <div id="admin-auth-view" class="view hidden">
+            <h2>Acceso Administrativo</h2>
+            <form id="admin-form">
+                <input type="password" id="admin-pass" placeholder="Contraseña" required>
+                <button type="submit" class="btn primary">Ingresar</button>
+            </form>
+            <div style="margin-top: 2rem; text-align: center;">
+                <a href="index.html" class="btn text">Ir a Vista Usuario</a>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard View -->
+        <div id="admin-view" class="view hidden">
+            <div class="admin-controls">
+                <button id="scan-btn" class="btn large">📷 Escanear Cliente</button>
+            </div>
+
+            <div id="scanner-container" class="hidden">
+                <div id="reader"></div>
+                <button id="stop-scan" class="btn secondary">Detener Escaneo</button>
+            </div>
+
+            <div id="admin-user-details" class="hidden">
+                <div class="card">
+                    <h3 id="admin-user-name">Nombre Cliente</h3>
+                    <p>Visitas actuales: <strong id="admin-user-visits"
+                            style="font-size: 1.5rem; color: var(--primary-color);">0</strong></p>
+
+                    <div class="actions">
+                        <button class="btn action-add primary" data-add="1">+1 Visita</button>
+                    </div>
+                </div>
+
+                <h4>Canjear Promoción</h4>
+                <div id="admin-promo-list"></div>
+
+                <br>
+                <button id="close-user-details" class="btn secondary">Finalizar con Cliente</button>
+            </div>
+
+            <div class="sync-controls">
+                <h3>Sincronización</h3>
+                <p>Cambios pendientes: <span id="pending-count">0</span></p>
+                <button id="download-db-btn" class="btn outline">💾 Descargar usuarios.json Nuevo</button>
+                <br><br>
+                <button id="logout-btn" class="btn secondary">Cerrar Sesión</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- External Libs -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <!-- Admin Scripts -->
+    <script type="module" src="js/admin.js"></script>
+
+    <script>
+        // Register SW shared with the user app
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js');
+            });
+        }
+    </script>
+</body>
+
+</html>
