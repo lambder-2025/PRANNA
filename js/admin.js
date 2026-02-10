@@ -169,7 +169,10 @@ const app = {
         const idInput = document.getElementById('edit-user-id');
         const nameInput = document.getElementById('edit-user-name');
         const telInput = document.getElementById('edit-user-tel');
+        const passInput = document.getElementById('edit-user-pass');
         const visitsInput = document.getElementById('edit-user-visits');
+
+        passInput.value = ''; // Always clear pass field
 
         if (user) {
             formTitle.textContent = 'Editar Usuario';
@@ -177,12 +180,14 @@ const app = {
             nameInput.value = user.nombre;
             telInput.value = user.telefono;
             visitsInput.value = user.visitas;
+            passInput.placeholder = "Dejar en blanco para mantener actual";
         } else {
             formTitle.textContent = 'Nuevo Usuario';
             idInput.value = '';
             nameInput.value = '';
             telInput.value = '';
             visitsInput.value = 0;
+            passInput.placeholder = "Contraseña (Opcional, default: 1234)";
         }
 
         document.getElementById('edit-user-form').classList.remove('hidden');
@@ -192,11 +197,10 @@ const app = {
         const id = document.getElementById('edit-user-id').value;
         const nombre = document.getElementById('edit-user-name').value;
         const telefono = document.getElementById('edit-user-tel').value;
-        const visitas = parseInt(document.getElementById('edit-user-visits').value);
+        const pass = document.getElementById('edit-user-pass').value;
+        const visits = parseInt(document.getElementById('edit-user-visits').value);
 
-        // Simple default password "1234" hash for new users
-        // Real app should ask for pass, but keeping it simple as requested
-        const defaultHash = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
+        const defaultHash = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4"; // 1234
 
         let user;
         if (id) {
@@ -204,16 +208,24 @@ const app = {
             user = await DB.getUser(id);
             user.nombre = nombre;
             user.telefono = telefono;
-            user.visitas = visitas;
+            user.visitas = visits;
+            if (pass) {
+                user.passwordHash = await Utils.hashPassword(pass);
+            }
             user.updatedAt = new Date().toISOString();
         } else {
             // Create
+            let passwordHash = defaultHash;
+            if (pass) {
+                passwordHash = await Utils.hashPassword(pass);
+            }
+
             user = {
-                id: `u-${Date.now()}`, // Simple ID gen
+                id: `u-${Date.now()}`,
                 nombre,
                 telefono,
                 visitas,
-                passwordHash: defaultHash,
+                passwordHash,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
