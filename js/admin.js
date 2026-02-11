@@ -5,7 +5,8 @@ const app = {
     state: {
         isAdmin: false,
         subUser: null,
-        users: [] // Cache for list
+        users: [],
+        fileHandle: null // For Direct Save
     },
 
     async init() {
@@ -115,8 +116,14 @@ const app = {
                     const updatedUser = await DB.addVisit(this.state.subUser.id);
                     this.state.subUser = updatedUser; // Update local ref
                     this.renderAdminUserDetails(updatedUser);
-                    alert('Visita agregada correctamente');
-                    this.updateSyncStatus();
+
+                    if (this.state.fileHandle) {
+                        await this.saveToHandle();
+                        alert('Visita agregada y guardada');
+                    } else {
+                        alert('Visita agregada (Pendiente de sync)');
+                        this.updateSyncStatus();
+                    }
                 } catch (err) {
                     alert(err.message);
                 }
@@ -132,6 +139,66 @@ const app = {
             a.download = 'usuarios-actualizados.json';
             a.click();
         });
+
+        // Direct File Connect
+        document.getElementById('connect-file-btn').addEventListener('click', async () => {
+            try {
+                // Request handle
+                const [handle] = await window.showOpenFilePicker({
+                    types: [{
+                        description: 'JSON Database',
+                        accept: { 'application/json': ['.json'] }
+                    }],
+                    multiple: false
+                });
+
+                this.state.fileHandle = handle;
+
+                // Verify content matches (optional but good safety)
+                // const file = await handle.getFile();
+                // const text = await file.text();
+
+                document.getElementById('connect-file-btn').classList.add('hidden');
+                document.getElementById('file-status').textContent = "✅ Modo: Edición Directa Activada";
+                document.getElementById('file-status').style.color = "var(--primary-color)";
+                document.getElementById('download-db-btn').classList.add('hidden'); // Hide manual download
+
+                // Auto-sync current pending if any
+                if (await DB.getPendingActions().length > 0) {
+                    await this.saveToHandle();
+                }
+
+            } catch (err) {
+                console.error(err);
+                if (err.name !== 'AbortError') {
+                    alert('Tu navegador no soporta edición directa o fue cancelado.');
+                }
+            }
+        });
+    },
+
+    // --- Direct Save Logic ---
+    async saveToHandle() {
+        if (!this.state.fileHandle) return false;
+
+        try {
+            const users = await DB.getAll('users');
+            // Pretty print JSON
+            const content = JSON.stringify(users, null, 2);
+
+            const writable = await this.state.fileHandle.createWritable();
+            await writable.write(content);
+            await writable.close();
+
+            // Clear pending since we just saved "to server" (local file)
+            // In a real app we'd clear pending queue here.
+
+            return true;
+        } catch (e) {
+            console.error('Save failed', e);
+            alert('Error guardando archivo directo: ' + e.message);
+            return false;
+        }
     },
 
     // --- User Management (CRUD) ---
@@ -318,8 +385,14 @@ const app = {
                         const updatedUser = await DB.redeemPromo(user.id, p.id);
                         this.state.subUser = updatedUser;
                         this.renderAdminUserDetails(updatedUser);
-                        alert('¡Canje exitoso!');
-                        this.updateSyncStatus();
+
+                        if (this.state.fileHandle) {
+                            await this.saveToHandle();
+                            alert('¡Canje exitoso y guardado!');
+                        } else {
+                            alert('¡Canje exitoso! (Recuerda sincronizar)');
+                            this.updateSyncStatus();
+                        }
                     } catch (e) {
                         alert(e.message);
                     }
