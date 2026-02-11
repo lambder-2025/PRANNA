@@ -119,9 +119,9 @@ const app = {
 
                     if (this.state.fileHandle) {
                         await this.saveToHandle();
-                        alert('Visita agregada y guardada');
+                        alert('✅ Visita guardada en usuarios.json');
                     } else {
-                        alert('Visita agregada (Pendiente de sync)');
+                        alert('⚠️ Visita guardada en memoria. \n\n¡Recuerda conectar el archivo o descargar el JSON para no perder cambios!');
                         this.updateSyncStatus();
                     }
                 } catch (err) {
@@ -164,8 +164,12 @@ const app = {
                 document.getElementById('download-db-btn').classList.add('hidden'); // Hide manual download
 
                 // Auto-sync current pending if any
-                if (await DB.getPendingActions().length > 0) {
+                const pending = await DB.getPendingActions();
+                if (pending && pending.length > 0) {
                     await this.saveToHandle();
+                    alert('✅ Se han sincronizado los cambios pendientes en el archivo.');
+                } else {
+                    alert('✅ Conexión exitosa. Los próximos cambios se guardarán directo en usuarios.json');
                 }
 
             } catch (err) {
