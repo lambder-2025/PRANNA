@@ -28,17 +28,39 @@ const app = {
     },
 
     bindEvents() {
-        // Easter Egg: 5 clicks on header title to go to Admin
+        // Advanced Easter Egg: 
+        // 1. Enter '404' in User ID Input
+        // 2. Click Header Title 10 times
         let clicks = 0;
-        document.querySelector('.app-header h1').addEventListener('click', () => {
-            clicks++;
-            if (clicks === 5) {
-                if (confirm('¿Ir al panel de administrador?')) {
-                    window.location.href = 'admin.html';
+        const headerTitle = document.querySelector('.app-header h1');
+
+        headerTitle.addEventListener('click', () => {
+            const idInput = document.getElementById('user-id-input');
+
+            if (idInput && idInput.value.trim() === '404') {
+                clicks++;
+                // Visual feedback (optional)
+                headerTitle.style.opacity = 1 - (clicks * 0.05);
+
+                if (clicks >= 10) {
+                    if (confirm('¿Acceder al Panel de Administración?')) {
+                        window.location.href = 'admin.html';
+                    }
+                    clicks = 0;
+                    headerTitle.style.opacity = 1;
                 }
+            } else {
+                // Reset if input is not 404
                 clicks = 0;
+                headerTitle.style.opacity = 1;
             }
-            setTimeout(() => clicks = 0, 2000); // Reset if not fast enough
+
+            // Reset after 3 seconds of inactivity
+            if (this.clickTimeout) clearTimeout(this.clickTimeout);
+            this.clickTimeout = setTimeout(() => {
+                clicks = 0;
+                headerTitle.style.opacity = 1;
+            }, 3000);
         });
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
