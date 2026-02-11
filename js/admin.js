@@ -308,13 +308,14 @@ const app = {
         // Try auto-save if handle exists
         if (this.state.fileHandle) {
             await this.saveToHandle();
+            alert('✅ Usuario guardado correctamente en usuarios.json');
         } else {
             this.updateSyncStatus();
+            alert('⚠️ Usuario guardado en memoria. \n\n¡No olvides conectar el archivo JSON para persistir estos cambios!');
         }
 
         document.getElementById('edit-user-form').classList.add('hidden');
         this.loadUserList(); // Refresh list
-        alert('Usuario guardado');
     },
 
     // --- Scanner Logic ---
