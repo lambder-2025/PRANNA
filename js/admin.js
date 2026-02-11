@@ -301,9 +301,15 @@ const app = {
         await DB.put('users', user);
         await DB.logPendingAction({ type: id ? 'updateUser' : 'createUser', userId: user.id, timestamp: new Date().toISOString() });
 
+        // Try auto-save if handle exists
+        if (this.state.fileHandle) {
+            await this.saveToHandle();
+        } else {
+            this.updateSyncStatus();
+        }
+
         document.getElementById('edit-user-form').classList.add('hidden');
         this.loadUserList(); // Refresh list
-        this.updateSyncStatus();
         alert('Usuario guardado');
     },
 
